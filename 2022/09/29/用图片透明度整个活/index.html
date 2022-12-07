@@ -144,23 +144,39 @@
       <span>2022-09-29</span>
     </time>
     
+    <span class="dot"></span>
+    
+    <a href="/categories/编程/" class="post-meta-link">编程</a>
+    
+    
     
     <span class="dot"></span>
-    <span>439 字</span>
+    <span>451 字</span>
     
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/python/" class="post-meta-link">python</a>
+      
+    </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <p>之前在qq群里看到一张图片(正经),点开之后变成了另一张图(不那么正经)</p>
+    <p>之前在qq群里看到老司机发了一张图片，表面看起来挺正经，点开放大之后变成了另一张图…</p>
 <blockquote>
 <p>不正经的图.png</p>
 </blockquote>
-<p>原理其实很简单，qq里的图片，没点开时是白底，点开后会换成黑底背景,只不过被图片覆盖了看不出来。 如果图片本身是半透明的，那由于白底黑底的切换，就会实现有趣的换图效果</p>
+<p>原理其实很简单，qq里的图片，没点开时是白底，点开后会换成黑底背景，只不过被图片覆盖了看不出来。 如果图片本身是半透明的，那由于白底黑底的切换，就会实现有趣的换图效果。</p>
 <p><img src="/img/output.png" alt="img" / srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/img/output.png" class="lozad post-image"></p>
-<p>通过切换本页面的深浅色模式可以看到一定效果，在qq中效果明显。</p>
+<p>（通过切换本页面的深浅色模式可以看到一定效果，在qq中效果明显，微信无效。</p>
 <p>因为本人对ps等图片处理软件还不太熟练，所以用python写了个能达到同样效果的小脚本，代码如下</p>
 <pre class="highlight"><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"></span><br><span class="line">input_img1 = <span class="string">&#x27;./input1.png&#x27;</span></span><br><span class="line">input_img2 = <span class="string">&#x27;./input2.png&#x27;</span></span><br><span class="line">output_img = <span class="string">&#x27;./output.png&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取两张图片，并转换成灰度图</span></span><br><span class="line">img1 = Image.<span class="built_in">open</span>(input_img1).convert(<span class="string">&#x27;L&#x27;</span>)</span><br><span class="line">img2 = Image.<span class="built_in">open</span>(input_img2).convert(<span class="string">&#x27;L&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用第一张图片的尺寸作为输出图片的尺寸</span></span><br><span class="line">width, Height = img1.size</span><br><span class="line">img2 = img2.resize(size=img1.size)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 新创建一个图片对象, 模式为灰度图加上Alpha通道，尺寸和第一张图片相同</span></span><br><span class="line">img3 = Image.new(<span class="string">&#x27;LA&#x27;</span>, size=(width, Height))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 遍历第一张图片的每一个像素点，坐标为(l, h)</span></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(width):</span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(Height):</span><br><span class="line">        xy = (x, y)</span><br><span class="line">        L1 = img1.getpixel(xy)</span><br><span class="line">        L2 = img2.getpixel(xy)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 设输出图像在xy坐标点的灰度值为L3, alpha值为A, 二者的取值范围都为(0, 255)</span></span><br><span class="line">        <span class="comment"># 则该点的不透明度: A% = A / 255</span></span><br><span class="line">        <span class="comment"># 由透明度叠加算法，列出下面算式</span></span><br><span class="line">        <span class="comment"># 黑底: L3 * A% = L1 / 2</span></span><br><span class="line">        <span class="comment"># 白底: L3 * A% + 255 * (1 - A%) = (L2 + 255) / 2</span></span><br><span class="line">        <span class="comment"># 解得:</span></span><br><span class="line">        L3 = <span class="built_in">int</span>(L1 * <span class="number">255</span> / (L1 - L2 + <span class="number">255</span>))</span><br><span class="line">        A = <span class="built_in">int</span>((<span class="number">255</span> + L1 - L2) / <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 将算出的值填入图片</span></span><br><span class="line">        img3.putpixel(xy, (L3, A))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存输出图片</span></span><br><span class="line">img3.save(output_img)</span><br><span class="line"></span><br></pre>
+
   </div>
   <div>
   
@@ -169,12 +185,12 @@
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2022/11/05/hello-world/" class="nav-link">
+    <a href="/2022/11/06/latex公式测试/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">Hello World </div>
+        <div class="nav-title">latex公式测试 </div>
         
       </div>
     </a>
@@ -197,11 +213,11 @@
 <p class="author-description">萍水相逢此识君</p>
 <div class="author-message">
   <a class="author-posts-count" href="/archives">
-    <span>7</span>
+    <span>5</span>
     <span>文章</span>
   </a>
   <a class="author-categories-count" href="/categories">
-    <span>1</span>
+    <span>2</span>
     <span>分类</span>
   </a>
   <a class="author-tags-count" href="/tags">
@@ -228,10 +244,17 @@
   <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
   <div class="categories-list">
     
-      <a href="/categories/学习">
+      <a href="/categories/编程">
         <div class="categories-list-item">
-          学习
+          编程
           <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/课程">
+        <div class="categories-list-item">
+          课程
+          <span class="categories-list-item-badge">2</span>
         </div>
       </a>
     
@@ -244,13 +267,13 @@
   <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
   <div class="tags-list">
     
-    <a href="\tags\学习笔记" title="学习笔记"><div class="tags-list-item">学习笔记</div></a>
-    
     <a href="\tags\仪器分析" title="仪器分析"><div class="tags-list-item">仪器分析</div></a>
+    
+    <a href="\tags\学习笔记" title="学习笔记"><div class="tags-list-item">学习笔记</div></a>
     
     <a href="\tags\latex" title="latex"><div class="tags-list-item">latex</div></a>
     
-    <a href="\tags\毛中特" title="毛中特"><div class="tags-list-item">毛中特</div></a>
+    <a href="\tags\python" title="python"><div class="tags-list-item">python</div></a>
     
     <a href="\tags\测试" title="测试"><div class="tags-list-item">测试</div></a>
     
@@ -278,11 +301,6 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-12-07</div>
-        <a href="/2022/12/07/三个代表重要思想/"><div class="recent-posts-item-content">三个代表重要思想</div></a>
-      </div>
-    
-      <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2022-12-07</div>
         <a href="/2022/12/07/色谱法/"><div class="recent-posts-item-content">色谱法</div></a>
       </div>
     
@@ -294,6 +312,11 @@
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-11-06</div>
         <a href="/2022/11/06/latex符号大全/"><div class="recent-posts-item-content">latex符号大全</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-06</div>
+        <a href="/2022/11/06/latex公式测试/"><div class="recent-posts-item-content">latex公式测试</div></a>
       </div>
     
   </div>
