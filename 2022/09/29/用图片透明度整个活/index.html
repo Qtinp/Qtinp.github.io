@@ -132,244 +132,61 @@
       <div class="container">
         <div class="columns">
           <main class="main-column">
-<div class="card">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      用图片透明度整个活
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-29T13:31:32.000Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2022-09-29</span>
+    </time>
+    
+    
+    <span class="dot"></span>
+    <span>439 字</span>
+    
+  </div>
   
-  <article class="card card-content">
-    <a href="/2022/12/07/三个代表重要思想/">
-      <h1 class="post-title">
-        三个代表重要思想
-      </h1>
-    </a>
-    <div class="card-excerpt">
-      
-       形成过程
-社会历史条件
-时代背景：当今国际形势的深刻变化，和平与发展仍是当今时代的...
-      
-    </div>
-    <div class="card-post-footer">
-      <div class="post-meta">
-        <time datetime="2022-12-07T06:00:25.000Z" style="display: flex; align-items: center;">
-          <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-          <span>2022-12-07</span>
-        </time>
+  </header>
+  <div id="section" class="post-content">
+    <p>之前在qq群里看到一张图片(正经),点开之后变成了另一张图(不那么正经)</p>
+<blockquote>
+<p>不正经的图.png</p>
+</blockquote>
+<p>原理其实很简单，qq里的图片，没点开时是白底，点开后会换成黑底背景,只不过被图片覆盖了看不出来。 如果图片本身是半透明的，那由于白底黑底的切换，就会实现有趣的换图效果</p>
+<p><img src="/img/output.png" alt="img" / srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/img/output.png" class="lozad post-image"></p>
+<p>通过切换本页面的深浅色模式可以看到一定效果，在qq中效果明显。</p>
+<p>因为本人对ps等图片处理软件还不太熟练，所以用python写了个能达到同样效果的小脚本，代码如下</p>
+<pre class="highlight"><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"></span><br><span class="line">input_img1 = <span class="string">&#x27;./input1.png&#x27;</span></span><br><span class="line">input_img2 = <span class="string">&#x27;./input2.png&#x27;</span></span><br><span class="line">output_img = <span class="string">&#x27;./output.png&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 读取两张图片，并转换成灰度图</span></span><br><span class="line">img1 = Image.<span class="built_in">open</span>(input_img1).convert(<span class="string">&#x27;L&#x27;</span>)</span><br><span class="line">img2 = Image.<span class="built_in">open</span>(input_img2).convert(<span class="string">&#x27;L&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用第一张图片的尺寸作为输出图片的尺寸</span></span><br><span class="line">width, Height = img1.size</span><br><span class="line">img2 = img2.resize(size=img1.size)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 新创建一个图片对象, 模式为灰度图加上Alpha通道，尺寸和第一张图片相同</span></span><br><span class="line">img3 = Image.new(<span class="string">&#x27;LA&#x27;</span>, size=(width, Height))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 遍历第一张图片的每一个像素点，坐标为(l, h)</span></span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(width):</span><br><span class="line">    <span class="keyword">for</span> y <span class="keyword">in</span> <span class="built_in">range</span>(Height):</span><br><span class="line">        xy = (x, y)</span><br><span class="line">        L1 = img1.getpixel(xy)</span><br><span class="line">        L2 = img2.getpixel(xy)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 设输出图像在xy坐标点的灰度值为L3, alpha值为A, 二者的取值范围都为(0, 255)</span></span><br><span class="line">        <span class="comment"># 则该点的不透明度: A% = A / 255</span></span><br><span class="line">        <span class="comment"># 由透明度叠加算法，列出下面算式</span></span><br><span class="line">        <span class="comment"># 黑底: L3 * A% = L1 / 2</span></span><br><span class="line">        <span class="comment"># 白底: L3 * A% + 255 * (1 - A%) = (L2 + 255) / 2</span></span><br><span class="line">        <span class="comment"># 解得:</span></span><br><span class="line">        L3 = <span class="built_in">int</span>(L1 * <span class="number">255</span> / (L1 - L2 + <span class="number">255</span>))</span><br><span class="line">        A = <span class="built_in">int</span>((<span class="number">255</span> + L1 - L2) / <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 将算出的值填入图片</span></span><br><span class="line">        img3.putpixel(xy, (L3, A))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存输出图片</span></span><br><span class="line">img3.save(output_img)</span><br><span class="line"></span><br></pre>
+  </div>
+  <div>
+  
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2022/11/05/hello-world/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
         
-        
-        <span class="dot"></span>
-        <span>224 字</span>
+        <div class="nav-title">Hello World </div>
         
       </div>
-      <a href="/2022/12/07/%E4%B8%89%E4%B8%AA%E4%BB%A3%E8%A1%A8%E9%87%8D%E8%A6%81%E6%80%9D%E6%83%B3/">继续阅读 </a>
-    </div>
-  </article>
-</div>
-
-<div class="card">
-  
-  <article class="card card-content">
-    <a href="/2022/12/07/色谱法/">
-      <h1 class="post-title">
-        色谱法
-      </h1>
     </a>
-    <div class="card-excerpt">
-      
-       色谱法概述
-色谱法是一种重要的分离分析方法，根据组分在两相中作用能力不同而达到分离目的。
-      
-    </div>
-    <div class="card-post-footer">
-      <div class="post-meta">
-        <time datetime="2022-12-06T16:59:40.000Z" style="display: flex; align-items: center;">
-          <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-          <span>2022-12-07</span>
-        </time>
-        
-        <span class="dot"></span>
-        
-        <a href="categories/学习/" class="post-meta-link">学习</a>
-        
-        
-        
-        <span class="dot"></span>
-        <span>1.4k 字</span>
-        
-      </div>
-      <a href="/2022/12/07/%E8%89%B2%E8%B0%B1%E6%B3%95/">继续阅读 </a>
-    </div>
-  </article>
-</div>
-
-<div class="card">
+  </div>
   
-  <article class="card card-content">
-    <a href="/2022/12/07/仪器分析引言/">
-      <h1 class="post-title">
-        仪器分析引言
-      </h1>
-    </a>
-    <div class="card-excerpt">
-      
-       仪器分析概述
-
-仪器分析课程是生命科学、材料科学和环境科学研究中...
-      
-    </div>
-    <div class="card-post-footer">
-      <div class="post-meta">
-        <time datetime="2022-12-06T16:34:54.000Z" style="display: flex; align-items: center;">
-          <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-          <span>2022-12-07</span>
-        </time>
-        
-        
-        <span class="dot"></span>
-        <span>358 字</span>
-        
-      </div>
-      <a href="/2022/12/07/%E4%BB%AA%E5%99%A8%E5%88%86%E6%9E%90%E5%BC%95%E8%A8%80/">继续阅读 </a>
-    </div>
-  </article>
-</div>
-
-<div class="card">
   
-  <article class="card card-content">
-    <a href="/2022/11/06/latex符号大全/">
-      <h1 class="post-title">
-        latex符号大全
-      </h1>
-    </a>
-    <div class="card-excerpt">
-      
-      希腊字母
-
-
-
-序号
-小写
-latex语法
-大写
-
-
-
-
-
-      
-    </div>
-    <div class="card-post-footer">
-      <div class="post-meta">
-        <time datetime="2022-11-06T05:43:43.000Z" style="display: flex; align-items: center;">
-          <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-          <span>2022-11-06</span>
-        </time>
-        
-        
-        <span class="dot"></span>
-        <span>117 字</span>
-        
-      </div>
-      <a href="/2022/11/06/latex%E7%AC%A6%E5%8F%B7%E5%A4%A7%E5%85%A8/">继续阅读 </a>
-    </div>
-  </article>
 </div>
 
-<div class="card">
-  
-  <article class="card card-content">
-    <a href="/2022/11/06/latex公式测试/">
-      <h1 class="post-title">
-        latex公式测试
-      </h1>
-    </a>
-    <div class="card-excerpt">
-      
-      牛顿-莱布尼茨公式 （微积分基本公式）
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
 
-      
-    </div>
-    <div class="card-post-footer">
-      <div class="post-meta">
-        <time datetime="2022-11-06T04:27:17.000Z" style="display: flex; align-items: center;">
-          <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-          <span>2022-11-06</span>
-        </time>
-        
-        
-        <span class="dot"></span>
-        <span>88 字</span>
-        
-      </div>
-      <a href="/2022/11/06/latex%E5%85%AC%E5%BC%8F%E6%B5%8B%E8%AF%95/">继续阅读 </a>
-    </div>
-  </article>
-</div>
-
-<div class="card">
-  
-  <article class="card card-content">
-    <a href="/2022/11/05/hello-world/">
-      <h1 class="post-title">
-        Hello World
-      </h1>
-    </a>
-    <div class="card-excerpt">
-      
-      Welcome to Hexo! This is your very first post. Check 
-      
-    </div>
-    <div class="card-post-footer">
-      <div class="post-meta">
-        <time datetime="2022-11-05T08:34:36.650Z" style="display: flex; align-items: center;">
-          <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-          <span>2022-11-05</span>
-        </time>
-        
-        
-        <span class="dot"></span>
-        <span>75 字</span>
-        
-      </div>
-      <a href="/2022/11/05/hello-world/">继续阅读 </a>
-    </div>
-  </article>
-</div>
-
-<div class="card">
-  
-  <article class="card card-content">
-    <a href="/2022/09/29/用图片透明度整个活/">
-      <h1 class="post-title">
-        用图片透明度整个活
-      </h1>
-    </a>
-    <div class="card-excerpt">
-      
-      之前在qq群里看到一张图片(正经),点开之后变成了另一张图(不那么正经)
-
-不正经的图.png
-
-原理其实很简单，qq里的图片，没点开时是白底，点开后...
-      
-    </div>
-    <div class="card-post-footer">
-      <div class="post-meta">
-        <time datetime="2022-09-29T13:31:32.000Z" style="display: flex; align-items: center;">
-          <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-          <span>2022-09-29</span>
-        </time>
-        
-        
-        <span class="dot"></span>
-        <span>439 字</span>
-        
-      </div>
-      <a href="/2022/09/29/%E7%94%A8%E5%9B%BE%E7%89%87%E9%80%8F%E6%98%8E%E5%BA%A6%E6%95%B4%E4%B8%AA%E6%B4%BB/">继续阅读 </a>
-    </div>
-  </article>
-</div>
-
-</main>
+</div></main>
           <aside class="left-column">
             
             <div class="card card-author">
@@ -397,6 +214,13 @@ latex语法
             
             <div class="sticky-tablet">
   
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+    </div>
+  </article>
   
   
   <article class="card card-content">
@@ -435,58 +259,16 @@ latex语法
   </article>
   
   
-  <article class="card card-content widescreen-archive">
-    <div class="archive-card">
-  <div class="archive-card-header"><i class="iconfont icon-wodebaobiao" style="padding-right: 2px;"></i>归档</div>
-  <div class="archive-card-list">
-    
-    
-    
-      
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-    
-      <a href="/archives/2022" class="archive-card-list-item">
-          2022
-          <span class="archive-card-list-item-badge">7</span>
-      </a>
-    
-  </div>
-</div>
-  </article>
-  
 </div>
           </aside>
           <aside class="right-column">
             <div class="sticky-widescreen">
   
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+  </article>
   
   
   <article class="card card-content">
@@ -518,53 +300,6 @@ latex语法
 </div>
   </article>
   
-  
-  <article class="card card-content">
-    <div class="archive-card">
-  <div class="archive-card-header"><i class="iconfont icon-wodebaobiao" style="padding-right: 2px;"></i>归档</div>
-  <div class="archive-card-list">
-    
-    
-    
-      
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-    
-      <a href="/archives/2022" class="archive-card-list-item">
-          2022
-          <span class="archive-card-list-item-badge">7</span>
-      </a>
-    
-  </div>
-</div>
-  </article>
   
 </div>
           </aside>
