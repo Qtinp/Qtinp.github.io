@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RuooTop</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="card-rotator">
+          <div class="card-inner">
+            <h1>ruoo.top</h1>
+            <span>海 若</span>
+            <p>海内存知己 | 天涯若比邻</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const card = document.querySelector('.card');
+      const angle = 15;
+      // if (window.navigator.userAgent) return
+      card.addEventListener('mousemove', (e) => {
+        const { clientX, clientY } = e;
+        const computedStyle = getComputedStyle(card);
+        const { width, height, left, top } = card.getBoundingClientRect();
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const offsetX = clientX - left;
+        const offsetY = clientY - top;
+        let rotateX = ((angle * (offsetY - centerY)) / centerY) * -1;
+        let rotateY = (angle * (offsetX - centerX)) / centerX;
+
+        card.style.setProperty('--rotateX', rotateX);
+        card.style.setProperty('--rotateY', rotateY);
+      });
+      card.addEventListener('mouseleave', (e) => {
+        card.style.setProperty('--rotateX', 0);
+        card.style.setProperty('--rotateY', 0);
+      });
+    </script>
+
+    <style>
+      *,
+      *::after,
+      *::before {
+        padding: 0;
+        margin: 0;
+      }
+
+      .container {
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(45deg, #4b5cc4, #44cef6);
+      }
+
+      .card {
+        cursor: pointer;
+        -webkit-user-select: none;
+        user-select: none;
+        perspective: 1200px;
+        border-radius: 1rem;
+        /* background-color: aquamarine; */
+        transition: 300ms ease-out;
+        box-shadow: inset calc(var(--rotateY) * -0.5px)
+          calc(var(--rotateX) * 0.5px) 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-rotator {
+        background-color: rgba(255, 255, 255, 0.1);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        overflow: hidden;
+        border-radius: 1rem;
+        position: relative;
+        transition: 300ms ease-out;
+        transform: rotateX(calc(var(--rotateX) * 1deg))
+          rotateY(calc(var(--rotateY) * 1deg));
+      }
+
+      .card-rotator::after {
+        content: '';
+        left: -50%;
+        top: -50%;
+        width: 200%;
+        height: 200%;
+        position: absolute;
+        background-image: radial-gradient(
+          circle at 60%,
+          rgba(255, 255, 255, 0.2),
+          transparent 50%
+        );
+        z-index: 100;
+        transform: translate3d(
+          calc(var(--rotateY) * -2%),
+          calc(var(--rotateX) * -2%),
+          0px
+        );
+        transition: 300ms ease-out;
+      }
+
+      .card-inner {
+        width: 50rem;
+        height: 30rem;
+        max-width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .card-inner h1 {
+        position: absolute;
+        top: 0;
+        color: #00ffff50;
+      }
+      .card-inner span {
+        position: absolute;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 16rem;
+        font-weight: 800;
+        color: #fff;
+        transform: translate3d(
+          calc(var(--rotateY) * -0.5%),
+          calc(var(--rotateX) * 0.5%),
+          0px
+        );
+        transition: 300ms ease-out;
+        opacity: 0.2;
+      }
+      .card-inner p {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #fff;
+      }
+    </style>
+  </body>
+</html>
